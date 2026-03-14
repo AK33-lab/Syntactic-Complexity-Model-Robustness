@@ -1,6 +1,8 @@
 from tqdm import tqdm
 from models import predict_mlp, predict_rnn, predict_transformer
 
+LABEL_MAP = {0: 2, 1: 1, 2: 0}
+
 def evaluate(
     data,
     mlp=None,
@@ -33,12 +35,16 @@ def evaluate(
         if "rnn" in results:
             results["rnn"].append(predict_rnn(rnn, p, h) == label)
         if "roberta" in results:
+            roberta_pred = predict_transformer(roberta_tokenizer, roberta_model, p, h)
+            roberta_pred = LABEL_MAP.get(roberta_pred, roberta_pred)
             results["roberta"].append(
-                predict_transformer(roberta_tokenizer, roberta_model, p, h) == label
+                roberta_pred == label
             )
         if "bart" in results:
+            bart_pred = predict_transformer(bart_tokenizer, bart_model, p, h)
+            bart_pred = LABEL_MAP.get(bart_pred, bart_pred)
             results["bart"].append(
-                predict_transformer(bart_tokenizer, bart_model, p, h) == label
+                bart_pred == label
             )
 
     for model_name, preds in results.items():
