@@ -1,25 +1,26 @@
 import random
 import numpy as np
 import torch
+import torch.nn as nn
+from transformers import RobertaTokenizer, RobertaModel
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def set_seed(seed=67):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     torch.use_deterministic_algorithms(True, warn_only=True)
 set_seed(67)
 
-import torch
-import torch.nn as nn
-from transformers import RobertaTokenizer, RobertaModel
-
 # Shared embedding backbone for MLP and RNN
 EMBED_MODEL_NAME = "roberta-base"
 tokenizer = RobertaTokenizer.from_pretrained(EMBED_MODEL_NAME)
-embed_model = RobertaModel.from_pretrained(EMBED_MODEL_NAME)
+embed_model = RobertaModel.from_pretrained(EMBED_MODEL_NAME).to(DEVICE)
 embed_model.eval()
 
 def get_embedding(premise, hypothesis):
@@ -30,7 +31,7 @@ def get_embedding(premise, hypothesis):
         truncation=True,
         max_length=128,
         padding="max_length"
-    )
+    ).to(DEVICE)
     with torch.no_grad():
         outputs = embed_model(**inputs)
     return outputs.last_hidden_state[:, 0, :]  # [CLS] token
@@ -70,14 +71,14 @@ from transformers import (
 def load_roberta():
     """Encoder-only transformer fine-tuned on MultiNLI."""
     tokenizer = AutoTokenizer.from_pretrained("roberta-large-mnli")
-    model = AutoModelForSequenceClassification.from_pretrained("roberta-large-mnli")
+    model = AutoModelForSequenceClassification.from_pretrained("roberta-large-mnli").to(DEVICE)
     model.eval()
     return tokenizer, model
 
 def load_bart():
     """Encoder-decoder transformer fine-tuned on MultiNLI."""
     tokenizer = AutoTokenizer.from_pretrained("facebook/bart-large-mnli")
-    model = AutoModelForSequenceClassification.from_pretrained("facebook/bart-large-mnli")
+    model = AutoModelForSequenceClassification.from_pretrained("facebook/bart-large-mnli").to(DEVICE)
     model.eval()
     return tokenizer, model
 
@@ -103,6 +104,8 @@ def seed_worker(worker_id):
     random.seed(worker_seed)
 
 def train_model(model, data, save_path, epochs=3, batch_size=32):
+    model = model.to(DEVICE)
+
     generator = torch.Generator()
     generator.manual_seed(67)
 
@@ -121,6 +124,8 @@ def train_model(model, data, save_path, epochs=3, batch_size=32):
     for epoch in range(epochs):
         total_loss = 0
         for embs, labels in tqdm(loader, desc=f"Epoch {epoch+1}"):
+            embs = embs.to(DEVICE, non_blocking=True)
+            labels = labels.to(DEVICE, non_blocking=True)
             optimizer.zero_grad()
             outputs = model(embs)
             loss = criterion(outputs, labels)
@@ -134,6 +139,7 @@ def train_model(model, data, save_path, epochs=3, batch_size=32):
 
 #Inference
 def predict_mlp(model, premise, hypothesis):
+    model = model.to(DEVICE)
     model.eval()
     with torch.no_grad():
         emb = get_embedding(premise, hypothesis)
@@ -141,6 +147,7 @@ def predict_mlp(model, premise, hypothesis):
         return torch.argmax(output, dim=1).item()
 
 def predict_rnn(model, premise, hypothesis):
+    model = model.to(DEVICE)
     model.eval()
     with torch.no_grad():
         emb = get_embedding(premise, hypothesis)
@@ -148,6 +155,7 @@ def predict_rnn(model, premise, hypothesis):
         return torch.argmax(output, dim=1).item()
 
 def predict_transformer(tokenizer, model, premise, hypothesis):
+    model = model.to(DEVICE)
     model.eval()
     inputs = tokenizer(
         premise, hypothesis,
@@ -155,7 +163,7 @@ def predict_transformer(tokenizer, model, premise, hypothesis):
         truncation=True,
         max_length=128,
         padding="max_length"
-    )
+    ).to(DEVICE)
     with torch.no_grad():
         outputs = model(**inputs)
         return torch.argmax(outputs.logits, dim=1).item()
