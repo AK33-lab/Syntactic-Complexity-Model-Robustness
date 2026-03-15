@@ -57,4 +57,4 @@ python -m benepar.download benepar_en3
 ## Notes
 
 - If a CUDA GPU is available, the code uses it automatically.
-- Running `main_hw3.py` rewrites `perf.csv` and `complex.csv`.
+- Running `hw3.py` rewrites `perf.csv` and `complex.csv`.
