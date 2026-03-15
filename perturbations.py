@@ -1,5 +1,6 @@
 import spacy
 import pyinflect
+import random
 nlp = spacy.load("en_core_web_sm")
 
 PERSON_NOUNS = {
@@ -119,3 +120,50 @@ def passive_voice(text):
                 return f"{obj_phrase} was {past_participle} by {subj_phrase}{ending_punct}"
 
     return text  # return unchanged if no transformation possible
+
+# Perturbation 3
+PP_INSERTIONS = [
+    "at the time",
+    "at that moment", 
+    "in question",
+    "in this case",
+    "at that point",
+    "on that occasion",
+    "in the scenario",
+    "at that instance",
+    "which we are talking about"
+]
+
+_PP_RNG = random.Random(67)
+_PP_POOL = []
+
+
+def _next_pp_insertion():
+    global _PP_POOL
+    if not _PP_POOL:
+        _PP_POOL = PP_INSERTIONS[:]
+        _PP_RNG.shuffle(_PP_POOL)
+    return _PP_POOL.pop()
+
+def prepositional_phrase_insertion(text):
+    """
+    Inserts a generic prepositional phrase after the first noun phrase.
+    Example:
+    "The doctor examined the patient." -> "The doctor at that instance examined the patient."
+    """
+    doc = nlp(text)
+    noun_chunks = list(doc.noun_chunks)
+
+    if not noun_chunks:
+        return text
+
+    # Insert after the first noun chunk
+    first_np = noun_chunks[0]
+    pp = _next_pp_insertion()
+    insert_at = first_np.end
+
+    tokens = [token.text_with_ws for token in doc]
+    # Insert PP after first noun chunk
+    tokens.insert(insert_at, pp + " ")
+
+    return "".join(tokens).strip()
