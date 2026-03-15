@@ -1,7 +1,6 @@
 __pycache__
-slurm_logs/432455
-slurm_logs/432456
 hw3.pdf
 test_perturbations.py
 complexity_vs_error.png
-.gitignore plot_complexity.py
+plot_complexity.py
+supplementary/
