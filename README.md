@@ -10,7 +10,7 @@ This project evaluates four NLI models on original and perturbed MNLI premises a
 Run from the `hw3` folder:
 
 ```bash
-python main_hw3.py
+python hw3.py
 ```
 
 The script evaluates these models:
@@ -29,7 +29,7 @@ Across these methods:
 
 ## Required Files
 
-- `main_hw3.py`
+- `hw3.py`
 - `models.py`
 - `evaluate.py`
 - `data_loader.py`
@@ -57,4 +57,4 @@ python -m benepar.download benepar_en3
 ## Notes
 
 - If a CUDA GPU is available, the code uses it automatically.
-- Running `main_hw3.py` rewrites `perf.csv` and `complex.csv`.
+- Running `hw3.py` rewrites `perf.csv` and `complex.csv`.
