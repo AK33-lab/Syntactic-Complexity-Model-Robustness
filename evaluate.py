@@ -27,10 +27,6 @@ def evaluate(data, mlp=None, rnn=None, roberta_tokenizer=None, roberta_model=Non
             print(f"Evaluating {model_name}...")
             model.eval()
             for i in tqdm(range(0, len(embeddings), batch_size)):
-                # DEBUG
-                if i == 0:
-                    print(f"Type of embeddings[0]: {type(embeddings[0])}")
-                    print(f"Length of embeddings: {len(embeddings)}")
                 batch_embs = torch.stack(embeddings[i:i+batch_size]).to(DEVICE)
                 batch_labels = labels[i:i+batch_size]
                 with torch.no_grad():
@@ -66,5 +62,5 @@ def evaluate(data, mlp=None, rnn=None, roberta_tokenizer=None, roberta_model=Non
 
     for model_name, preds in results.items():
         acc = sum(preds) / len(preds)
-        print(f"{model_name} accuracy: {acc:.4f}")
+        print(f"{model_name} accuracy: {acc:.4f}", flush=True)
     return results
