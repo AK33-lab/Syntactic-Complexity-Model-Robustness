@@ -1,3 +1,4 @@
+#Error analysis script to identify cases where models get original correct but perturbed wrong.
 import argparse
 import csv
 import os
