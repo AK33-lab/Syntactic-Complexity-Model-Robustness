@@ -102,13 +102,12 @@ def _write_jsonl(path, records):
 
 def load_data(
     save_path="data.jsonl",
-    rebuild=False,
     perturbations=DEFAULT_PERTURBATIONS,
     sample_per_split=7500,
 ):
     requested_methods = {"original", *list(dict.fromkeys(perturbations))}
 
-    if os.path.exists(save_path) and not rebuild:
+    if os.path.exists(save_path):
         cached_data = _read_jsonl(save_path)
         if cached_data and _has_expanded_format(cached_data):
             cached_methods = {ex["perturbation_method"] for ex in cached_data}
