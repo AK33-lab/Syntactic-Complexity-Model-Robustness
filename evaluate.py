@@ -24,7 +24,7 @@ def evaluate(data, mlp=None, rnn=None, roberta_tokenizer=None, roberta_model=Non
             print(f"Evaluating {model_name}...")
             model.eval()
             for i in tqdm(range(0, len(embeddings), batch_size)):
-                batch_embs = torch.stack(embeddings[i:i+batch_size]).to(DEVICE)
+                batch_embs = torch.stack([e.clone().detach() for e in embeddings[i:i+batch_size]]).to(DEVICE)
                 batch_labels = labels[i:i+batch_size]
                 with torch.no_grad():
                     preds = torch.argmax(model(batch_embs), dim=1).tolist()

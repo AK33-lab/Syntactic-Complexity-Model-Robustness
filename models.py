@@ -45,7 +45,7 @@ def precompute_embeddings(data):
     embeddings = []
     for ex in tqdm(data, desc="Embedding"):
         emb = get_embedding(ex["premise"], ex["hypothesis"])
-        embeddings.append(emb.squeeze(0).cpu())
+        embeddings.append(emb.squeeze(0).detach().cpu())
     return embeddings
 
 # MLP model
