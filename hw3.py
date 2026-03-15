@@ -73,7 +73,7 @@ def main():
     set_seed(67)
     print(f"Using device: {DEVICE}")
 
-    # ── Load data ──────────────────────────────────────────────────────────────
+    # Load data
     data = load_data(save_path=DATA_PATH, perturbations=DEFAULT_PERTURBATIONS)
     grouped = group_by_perturbation(data)
 
@@ -81,7 +81,7 @@ def main():
         if method not in grouped:
             raise ValueError(f"Missing perturbation method in data: {method}")
 
-    # ── Load models ────────────────────────────────────────────────────────────
+    # Load models
     print("Loading MLP...")
     mlp_model = load_checkpoint(MLPClassifier(), MLP_WEIGHTS)
 
@@ -94,7 +94,7 @@ def main():
     print("Loading BART...")
     bart_tokenizer, bart_model = load_bart()
 
-    # ── Evaluate each method ───────────────────────────────────────────────────
+    # Evaluate each method
     perf_rows = []
     complex_rows = []
 
@@ -127,7 +127,7 @@ def main():
                 "value": f"{value:.6f}",
             })
 
-    # ── Sort and save CSVs ─────────────────────────────────────────────────────
+    # Sort and save CSVs
     perf_rows.sort(key=lambda r: (r["perturbation method"], r["model"]))
     complex_rows.sort(key=lambda r: (r["perturbation method"], r["metric type"]))
 
