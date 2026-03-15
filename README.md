@@ -10,7 +10,7 @@ This project evaluates four NLI models on original and perturbed MNLI premises a
 Run from the `hw3` folder:
 
 ```bash
-python main_hw3.py
+python hw3.py
 ```
 
 The script evaluates these models:
