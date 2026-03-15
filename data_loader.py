@@ -3,6 +3,7 @@ import os
 import random
 from datasets import load_dataset
 from collections import Counter
+from tqdm import tqdm
 
 DEFAULT_PERTURBATIONS = ("adjrel", "passive", "pp")
 
@@ -79,7 +80,7 @@ def _expand_with_perturbations(base_data, perturbations):
     expanded = []
     ordered_perturbations = ["original"] + list(dict.fromkeys(perturbations))
 
-    for ex in base_data:
+    for ex in tqdm(base_data, desc="Applying perturbations", unit="example"):
         for perturbation_method in ordered_perturbations:
             new_ex = dict(ex)
             if perturbation_method == "original":
@@ -94,7 +95,7 @@ def _expand_with_perturbations(base_data, perturbations):
 
 def _write_jsonl(path, records):
     with open(path, "w") as f:
-        for ex in records:
+        for ex in tqdm(records, desc=f"Writing {os.path.basename(path)}", unit="row"):
             json.dump(ex, f)
             f.write("\n")
 
