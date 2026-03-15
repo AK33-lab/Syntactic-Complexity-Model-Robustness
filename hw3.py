@@ -112,6 +112,7 @@ def accuracy_from_preds(preds):
 def main():
     args = parse_args()
     eval_targets = ["mlp", "rnn", "roberta", "bart"]
+    baseline_method = "original"
     selected_perturbations = list(dict.fromkeys(args.perturb))
     methods_to_report = selected_perturbations
 
@@ -133,6 +134,8 @@ def main():
         raise ValueError(
             "Missing perturbation methods in loaded data: " + ", ".join(missing_methods)
         )
+    if baseline_method not in grouped_data:
+        raise ValueError("Missing baseline method in loaded data: original")
 
     print("Loading saved MLP checkpoint...")
     mlp_model = load_checkpoint(MLPClassifier(), args.mlp_weights)
@@ -152,6 +155,19 @@ def main():
 
     perf_rows = []
     complex_rows = []
+
+    baseline_subset = grouped_data[baseline_method]
+    print(f"\nBaseline evaluation on original data ({len(baseline_subset)} examples)")
+    evaluate(
+        baseline_subset,
+        mlp=mlp_model,
+        rnn=rnn_model,
+        roberta_tokenizer=roberta_tokenizer,
+        roberta_model=roberta_model,
+        bart_tokenizer=bart_tokenizer,
+        bart_model=bart_model,
+        models_to_eval=eval_targets,
+    )
 
     for perturb_name in methods_to_report:
         subset = grouped_data[perturb_name]
