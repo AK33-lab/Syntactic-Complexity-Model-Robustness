@@ -1,6 +1,6 @@
 from tqdm import tqdm
 import torch
-from models import DEVICE
+from models import DEVICE, precompute_embeddings
 
 LABEL_MAP = {0: 2, 1: 1, 2: 0}
 
@@ -16,10 +16,7 @@ def evaluate(data, mlp=None, rnn=None, roberta_tokenizer=None, roberta_model=Non
     if "mlp" in models_to_eval or "rnn" in models_to_eval:
         from models import get_embedding
         print("Computing embeddings...")
-        embeddings = []
-        for ex in tqdm(data, desc="Embedding"):
-            emb = get_embedding(ex["premise"], ex["hypothesis"])
-            embeddings.append(emb.squeeze(0))
+        embeddings = [precompute_embeddings(data)]
 
         for model_name, model in [("mlp", mlp), ("rnn", rnn)]:
             if model_name not in models_to_eval:
@@ -63,5 +60,4 @@ def evaluate(data, mlp=None, rnn=None, roberta_tokenizer=None, roberta_model=Non
     for model_name, preds in results.items():
         acc = sum(preds) / len(preds)
         print(f"{model_name} accuracy: {acc:.4f}")
-
     return results

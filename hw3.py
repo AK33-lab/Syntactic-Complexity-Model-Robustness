@@ -14,6 +14,7 @@ from models import (
     RNNClassifier,
     load_roberta,
     load_bart,
+    precompute_embeddings
 )
 
 
