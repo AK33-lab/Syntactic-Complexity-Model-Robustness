@@ -1,17 +1,17 @@
 model,perturbation method,performance
 bart,adjrel,0.896667
-mlp,adjrel,0.327667
-rnn,adjrel,0.327667
+mlp,adjrel,0.547867
+rnn,adjrel,0.573333
 roberta,adjrel,0.897267
 bart,original,0.899867
-mlp,original,0.327667
-rnn,original,0.327667
+mlp,original,0.557200
+rnn,original,0.587333
 roberta,original,0.901933
 bart,passive,0.827067
-mlp,passive,0.327667
-rnn,passive,0.327667
+mlp,passive,0.543800
+rnn,passive,0.567067
 roberta,passive,0.828733
 bart,pp,0.898867
-mlp,pp,0.327667
-rnn,pp,0.327667
+mlp,pp,0.548600
+rnn,pp,0.577400
 roberta,pp,0.900400
