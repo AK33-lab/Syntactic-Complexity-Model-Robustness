@@ -29,7 +29,7 @@ Across these methods:
 
 ## Required Files
 
-- `main_hw3.py`
+- `hw3.py`
 - `models.py`
 - `evaluate.py`
 - `data_loader.py`
