@@ -77,4 +77,4 @@ def compute_complexity(text):
         }
     except Exception:
         return None
-        }
+    
