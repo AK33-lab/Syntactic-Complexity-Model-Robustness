@@ -45,7 +45,13 @@ def precompute_embeddings(data):
     embeddings = []
     for ex in tqdm(data, desc="Embedding"):
         emb = get_embedding(ex["premise"], ex["hypothesis"])
-        embeddings.append(emb.squeeze(0).detach().cpu())
+        # Ensure it's always a 1D tensor of size 768
+        if isinstance(emb, torch.Tensor):
+            embeddings.append(emb.squeeze().detach().cpu())
+        else:
+            raise TypeError(f"Expected tensor, got {type(emb)}")
+    # Verify all elements are tensors before returning
+    assert all(isinstance(e, torch.Tensor) for e in embeddings), "Not all embeddings are tensors!"
     return embeddings
 
 # MLP model
