@@ -1,0 +1,13 @@
+perturbation method,metric type,value
+adjrel,cfg_depth,10.667800
+adjrel,clause_count,4.338600
+adjrel,subj_verb_dist,2.993600
+original,cfg_depth,9.251467
+original,clause_count,3.287867
+original,subj_verb_dist,2.335733
+passive,cfg_depth,8.709933
+passive,clause_count,3.105533
+passive,subj_verb_dist,3.117200
+pp,cfg_depth,9.619333
+pp,clause_count,3.552000
+pp,subj_verb_dist,4.285000
