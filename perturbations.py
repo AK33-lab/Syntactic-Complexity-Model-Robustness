@@ -43,7 +43,24 @@ def adj_to_relative_clause(text):
     drop_indices = set()
     for adj_tokens in grouped_amods.values():
         for adj_token in adj_tokens:
+            next_token = doc[adj_token.i + 1] if adj_token.i + 1 < len(doc) else None
+            prev_token = doc[adj_token.i - 1] if adj_token.i - 1 >= 0 else None
+            if (
+                "-" in adj_token.text
+                or "-" in adj_token.head.text
+                or (next_token and next_token.text.startswith("-"))
+                or (prev_token and prev_token.text.startswith("-"))
+            ):
+                continue
             drop_indices.add(adj_token.i)
+
+    # Remove adjectives from grouped_amods that weren't dropped
+    cleaned_amods = {}
+    for noun_i, adj_tokens in grouped_amods.items():
+        kept_adjs = [adj for adj in adj_tokens if adj.i in drop_indices]
+        if kept_adjs:
+            cleaned_amods[noun_i] = kept_adjs
+    grouped_amods = cleaned_amods
 
     rebuilt = []
     for token in doc:
@@ -164,6 +181,9 @@ def prepositional_phrase_insertion(text):
 
     tokens = [token.text_with_ws for token in doc]
     # Insert PP after first noun chunk
+    next_token = doc[insert_at] if insert_at < len(doc) else None
+    if next_token and next_token.text.startswith("'"):
+        return text
     tokens.insert(insert_at, pp + " ")
 
     return "".join(tokens).strip()

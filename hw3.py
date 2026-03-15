@@ -84,6 +84,8 @@ def compute_average_complexity(data):
 
     for ex in data:
         metrics = compute_complexity(ex["premise"])
+        if metrics is None:  # skip failed parses
+            continue
         for metric_type, value in metrics.items():
             totals[metric_type] += float(value)
             counts[metric_type] += 1
