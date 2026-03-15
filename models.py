@@ -6,7 +6,7 @@ os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
 import torch
 import torch.nn as nn
-from transformers import RobertaTokenizer, RobertaModel
+from transformers import AutoTokenizer, AutoModel
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -22,9 +22,9 @@ def set_seed(seed=67):
 set_seed(67)
 
 # Shared embedding backbone for MLP and RNN
-EMBED_MODEL_NAME = "roberta-base"
-tokenizer = RobertaTokenizer.from_pretrained(EMBED_MODEL_NAME)
-embed_model = RobertaModel.from_pretrained(EMBED_MODEL_NAME).to(DEVICE)
+EMBED_MODEL_NAME = "textattack/roberta-base-MNLI"
+tokenizer = AutoTokenizer.from_pretrained(EMBED_MODEL_NAME)
+embed_model = AutoModel.from_pretrained(EMBED_MODEL_NAME).to(DEVICE)
 embed_model.eval()
 
 def get_embedding(premise, hypothesis):
