@@ -160,7 +160,7 @@ def main():
 
     baseline_subset = grouped_data[baseline_method]
     print(f"\nBaseline evaluation on original data ({len(baseline_subset)} examples)")
-    evaluate(
+    baseline_results = evaluate(
         baseline_subset,
         mlp=mlp_model,
         rnn=rnn_model,
@@ -170,6 +170,22 @@ def main():
         bart_model=bart_model,
         models_to_eval=eval_targets,
     )
+
+    for model_name in eval_targets:
+        performance = accuracy_from_preds(baseline_results[model_name])
+        perf_rows.append({
+            "model": model_name,
+            "perturbation method": "original",
+            "performance": f"{performance:.6f}",
+        })
+
+    complexity_scores = compute_average_complexity(baseline_subset)
+    for metric_type, value in complexity_scores.items():
+        complex_rows.append({
+            "perturbation method": "original",
+            "metric type": metric_type,
+            "value": f"{value:.6f}",
+        })
 
     for perturb_name in methods_to_report:
         subset = grouped_data[perturb_name]
