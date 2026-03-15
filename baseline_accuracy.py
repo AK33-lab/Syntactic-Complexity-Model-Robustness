@@ -37,7 +37,7 @@ def parse_args():
         "--models",
         nargs="+",
         choices=["mlp", "rnn", "roberta", "bart"],
-        default=["mlp", "rnn"],
+        default=["mlp", "rnn", "roberta", "bart"],
         help="Models to evaluate.",
     )
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size.")
