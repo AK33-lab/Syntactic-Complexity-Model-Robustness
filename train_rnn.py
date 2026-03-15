@@ -18,11 +18,6 @@ def parse_args():
         default="data.jsonl",
         help="Path to expanded JSONL with perturbation rows.",
     )
-    parser.add_argument(
-        "--rebuild-data",
-        action="store_true",
-        help="Rebuild data.jsonl from MNLI and perturbation functions.",
-    )
     return parser.parse_args()
 
 
@@ -32,7 +27,7 @@ def main():
     set_seed(67)
     print(f"Using device: {DEVICE}")
 
-    data = load_data(save_path=args.data_path, rebuild=args.rebuild_data)
+    data = load_data(save_path=args.data_path)
     original_data = [ex for ex in data if ex.get("perturbation_method") == "original"]
     print(f"Training RNN on {len(original_data)} original examples")
 

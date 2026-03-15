@@ -35,11 +35,6 @@ def parse_args():
         help="Path to expanded JSONL containing original and perturbed rows.",
     )
     parser.add_argument(
-        "--rebuild-data",
-        action="store_true",
-        help="Rebuild data.jsonl from MNLI and perturbation functions.",
-    )
-    parser.add_argument(
         "--mlp-weights",
         default=os.path.join(script_dir, "mlp_weights.pt"),
         help="Path to saved MLP checkpoint.",
@@ -126,7 +121,6 @@ def main():
 
     data = load_data(
         save_path=args.data_path,
-        rebuild=args.rebuild_data,
         perturbations=DEFAULT_PERTURBATIONS,
     )
     grouped_data = group_data_by_perturbation(data)
