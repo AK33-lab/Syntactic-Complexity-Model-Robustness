@@ -28,21 +28,21 @@ embed_model = RobertaModel.from_pretrained(EMBED_MODEL_NAME).to(DEVICE)
 embed_model.eval()
 
 def get_embedding(premise, hypothesis):
-    """Get a single [CLS] embedding for a premise-hypothesis pair."""
-    inputs = tokenizer(
-        premise, hypothesis,
-        return_tensors="pt",
-        truncation=True,
-        max_length=128,
-        padding="max_length"
-    ).to(DEVICE)
+    """Encode premise and hypothesis separately, return [p, h, |p-h|, p*h] as a (1, 4, 768) sequence."""
+    inputs_p = tokenizer(premise, return_tensors="pt", truncation=True,
+                         max_length=64, padding="max_length").to(DEVICE)
+    inputs_h = tokenizer(hypothesis, return_tensors="pt", truncation=True,
+                         max_length=64, padding="max_length").to(DEVICE)
     with torch.no_grad():
-        outputs = embed_model(**inputs)
-    return outputs.last_hidden_state[:, 0, :]  # [CLS] token
+        p_emb = embed_model(**inputs_p).last_hidden_state[:, 0, :]  # (1, 768)
+        h_emb = embed_model(**inputs_h).last_hidden_state[:, 0, :]  # (1, 768)
+    diff = (p_emb - h_emb).abs()
+    prod = p_emb * h_emb
+    return torch.stack([p_emb, h_emb, diff, prod], dim=1)  # (1, 4, 768)
 
 # MLP model
 class MLPClassifier(nn.Module):
-    def __init__(self, input_dim=768, hidden_dim=256, num_classes=3):
+    def __init__(self, input_dim=768 * 4, hidden_dim=256, num_classes=3):
         super().__init__()
         self.network = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
@@ -52,6 +52,7 @@ class MLPClassifier(nn.Module):
         )
 
     def forward(self, x):
+        x = x.reshape(x.size(0), -1)  # (batch, 4, 768) -> (batch, 3072)
         return self.network(x)
 
 # RNN model
@@ -62,7 +63,7 @@ class RNNClassifier(nn.Module):
         self.classifier = nn.Linear(hidden_dim, num_classes)
 
     def forward(self, x):
-        x = x.unsqueeze(1)
+        # x is (batch, 4, 768) — a real 4-step sequence
         _, (hidden, _) = self.rnn(x)
         return self.classifier(hidden[-1])
 
