@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 
 import torch
+from tqdm import tqdm
 
 from data_loader import DEFAULT_PERTURBATIONS, load_data
 from evaluate import evaluate
@@ -43,10 +44,10 @@ def group_by_perturbation(data):
     return grouped
 
 
-def compute_average_complexity(data):
+def compute_average_complexity(data, method_name):
     totals = defaultdict(float)
     counts = defaultdict(int)
-    for ex in data:
+    for ex in tqdm(data, desc=f"Complexity ({method_name})", unit="example"):
         metrics = compute_complexity(ex["premise"])
         if metrics is None:
             continue
@@ -119,7 +120,7 @@ def main():
                 "performance": f"{accuracy(results[model_name]):.6f}",
             })
 
-        for metric_type, value in compute_average_complexity(subset).items():
+        for metric_type, value in compute_average_complexity(subset, method).items():
             complex_rows.append({
                 "perturbation method": method,
                 "metric type": metric_type,
