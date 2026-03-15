@@ -20,11 +20,15 @@ print(f"Training on {len(original_data)} original examples")
 # Train MLP
 print("Training MLP...")
 mlp = MLPClassifier().to(DEVICE)
-train_model(mlp, original_data, "mlp_weights.pt", epochs=3)
+mlp_losses = train_model(mlp, original_data, "mlp_weights.pt", epochs=3)
 
 # Train RNN
 print("Training RNN...")
 rnn = RNNClassifier().to(DEVICE)
-train_model(rnn, original_data, "rnn_weights.pt", epochs=3)
+rnn_losses = train_model(rnn, original_data, "rnn_weights.pt", epochs=3)
 
+print("\n=== Training Summary ===")
+print(f"{'Epoch':<8} {'MLP Loss':<12} {'RNN Loss':<12}")
+for epoch, (ml, rl) in enumerate(zip(mlp_losses, rnn_losses), 1):
+    print(f"{epoch:<8} {ml:<12.4f} {rl:<12.4f}")
 print("Done!")

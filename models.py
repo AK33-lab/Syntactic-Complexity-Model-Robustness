@@ -126,6 +126,7 @@ def train_model(model, data, save_path, epochs=3, batch_size=32):
     criterion = nn.CrossEntropyLoss()
 
     model.train()
+    epoch_losses = []
     for epoch in range(epochs):
         total_loss = 0
         for embs, labels in tqdm(loader, desc=f"Epoch {epoch+1}"):
@@ -137,10 +138,13 @@ def train_model(model, data, save_path, epochs=3, batch_size=32):
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        print(f"Epoch {epoch+1} loss: {total_loss/len(loader):.4f}")
+        avg_loss = total_loss / len(loader)
+        epoch_losses.append(avg_loss)
+        print(f"Epoch {epoch+1} loss: {avg_loss:.4f}")
 
     torch.save(model.state_dict(), save_path)
     print(f"Saved weights to {save_path}")
+    return epoch_losses
 
 #Inference
 def predict_mlp(model, premise, hypothesis):
