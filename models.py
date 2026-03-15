@@ -40,20 +40,6 @@ def get_embedding(premise, hypothesis):
         outputs = embed_model(**inputs)
     return outputs.last_hidden_state[:, 0, :]  # [CLS] token
 
-def precompute_embeddings(data):
-    """Precompute embeddings for all examples in data."""
-    embeddings = []
-    for ex in tqdm(data, desc="Embedding"):
-        emb = get_embedding(ex["premise"], ex["hypothesis"])
-        # Ensure it's always a 1D tensor of size 768
-        if isinstance(emb, torch.Tensor):
-            embeddings.append(emb.squeeze().detach().cpu())
-        else:
-            raise TypeError(f"Expected tensor, got {type(emb)}")
-    # Verify all elements are tensors before returning
-    assert all(isinstance(e, torch.Tensor) for e in embeddings), "Not all embeddings are tensors!"
-    return embeddings
-
 # MLP model
 class MLPClassifier(nn.Module):
     def __init__(self, input_dim=768, hidden_dim=256, num_classes=3):

@@ -13,8 +13,7 @@ from models import (
     MLPClassifier,
     RNNClassifier,
     load_roberta,
-    load_bart,
-    precompute_embeddings
+    load_bart
 )
 
 
