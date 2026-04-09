@@ -1,4 +1,4 @@
-# HW3
+# Syntactic Complexity & Model Robustness
 
 This project evaluates four NLI models on original and perturbed MNLI premises and writes two CSV outputs:
 
