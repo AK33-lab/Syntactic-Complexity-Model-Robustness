@@ -7,10 +7,10 @@ This project evaluates four NLI models on original and perturbed MNLI premises a
 
 ## Main Script
 
-Run from the `hw3` folder:
+Run from the root folder:
 
 ```bash
-python hw3.py
+python main.py
 ```
 
 The script evaluates these models:
@@ -29,7 +29,7 @@ Across these methods:
 
 ## Required Files
 
-- `hw3.py`
+- `main.py`
 - `models.py`
 - `evaluate.py`
 - `data_loader.py`
