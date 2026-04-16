@@ -5,6 +5,8 @@ This project evaluates four NLI models on original and perturbed MNLI premises a
 - `perf.csv`: `model`, `perturbation method`, `performance`
 - `complex.csv`: `perturbation method`, `metric type`, `value`
 
+The analysis report can be found under `Syntactic Complexity Report.pdf`.
+
 ## Main Script
 
 Run from the root folder:
